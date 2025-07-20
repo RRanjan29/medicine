@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medicine Reader App</title>
+</head>
+<body>
+    <h2>Upload Doctor Prescription</h2>
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">Upload</button>
+
+    <h3>Results</h3>
+    <div id="results"></div>
+
+    <script>
+        async function uploadFile() {
+            const file = document.getElementById("fileInput").files[0];
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const response = await fetch("http://127.0.0.1:8000/upload", {
+                method: "POST",
+                body: formData
+            });
+            const data = await response.json();
+
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+            data.medicines.forEach((med) => {
+                const medDiv = document.createElement("div");
+                medDiv.innerHTML = `<strong>${med}</strong><ul>`;
+                data.links[med].forEach(link => {
+                    medDiv.innerHTML += `<li><a href='${link}' target='_blank'>${link}</a></li>`;
+                });
+                medDiv.innerHTML += "</ul>";
+                resultsDiv.appendChild(medDiv);
+            });
+        }
+    </script>
+</body>
+</html>
